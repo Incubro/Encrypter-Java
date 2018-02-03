@@ -329,7 +329,7 @@ public class BlowfishECB
      * two integer border) to another int buffer (of the
      * same size or bigger)
      * @param inbuffer buffer with plaintext data
-     * @param outBuffer buffer to get the ciphertext data
+     * @param outbuffer buffer to get the ciphertext data
      */
     public void encrypt(int[] inbuffer,
                         int[] outbuffer)
@@ -402,7 +402,7 @@ public class BlowfishECB
      * decrypts a byte buffer (should be aligned to an 8 byte border)
      * to another byte buffer (of the same size or bigger)
      * @param inbuffer buffer with ciphertext data
-     * @param outBuffer buffer to get the plaintext data
+     * @param outbuffer buffer to get the plaintext data
      */
     public void decrypt(byte[] inbuffer,
                         byte[] outbuffer)
