@@ -6,6 +6,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+import Encrypter.Encrypt;
+
 public class Splitter {
 
     private class IndexedComponent {
@@ -52,7 +54,18 @@ public class Splitter {
 
     public void SplitFile(String folder) throws IOException {
         byte[] mainFileContent = Files.readAllBytes(path);
+        for (int i = 0; i < mainFileContent.length; i += chunkSize) {
+            byte[] temp = new byte[chunkSize];
+            String str = new String(temp);
 
+            Encrypt e = new Encrypt(str, false);
+            String key = Integer.toString(str.hashCode());
+            String encString = e.encrypt(key);
+
+            System.arraycopy(mainFileContent, i, temp, 0, chunkSize);
+            Files.write(Paths.get(folder + folder.charAt(folder.length()-1) == "/" ? "" : "/" + encString.hashCode() ), encString.getBytes());
+            indexedData.add(new IndexedComponent("" + encString.hashCode(), key));
+        }
     }
 
 }

@@ -29,7 +29,7 @@ public class Example1 {
 
         try {
             Encrypt encrypt = new Encrypt("something", false);
-            String val = encrypt.encrypt(readFile(filePath, Charset.forName("UTF-8")));
+            String val = encrypt.encrypt(new String(java.util.Arrays.toString(readFile(filePath, Charset.forName("UTF-8")).getBytes()).getBytes(), "UTF-8"));
             writeFile(eFilePath, val);
 
             Encrypt decrypt = new Encrypt("something", false);
