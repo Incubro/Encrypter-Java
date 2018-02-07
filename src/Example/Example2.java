@@ -1,11 +1,25 @@
 package Example;
 
+import FileSplitter.*;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 public class Example2 {
 
     public static void main(String args[]) {
-        byte[] arr = "jatin".getBytes();
+        try {
 
-        System.out.println(java.util.Arrays.toString(arr));
+            Splitter s = new Splitter("temp.txt", 2);
+            s.SplitFile("tempf/");
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        }
 
     }
 
