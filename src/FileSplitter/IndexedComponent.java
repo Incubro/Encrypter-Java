@@ -1,6 +1,8 @@
 package FileSplitter;
 
-public class IndexedComponent {
+import java.io.Serializable;
+
+public class IndexedComponent implements Serializable {
     private String HashValue;
     private String Key;
 

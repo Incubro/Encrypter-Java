@@ -13,7 +13,14 @@ public class Example3 {
 //            System.out.println(new String(temp));
 //        }
 
-//        Combiner c = new Combiner();
+        try {
+            Combiner c = new Combiner("480bfaa8e06f07acae01045a990c77bd", "tempf/");
+            c.loadIndex();
+            String res = c.loadFile();
+            System.out.println(res);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 

@@ -31,9 +31,10 @@ public class Combiner {
     public String loadFile() throws IOException {
         String res = "";
         for (IndexedComponent chunk : indexedComponentList) {
-            String read = new String (Files.readAllBytes(Paths.get(path + path.charAt(path.length()-1) == "/" ? "" : "/" + chunk.getHashValue())));
-            Encrypt e = new Encrypt(read, false);
-            res += e.decrypt(chunk.getKey());
+            String read = new String (Files.readAllBytes(Paths.get(path + (path.charAt(path.length()-1) == '/' ? "" : "/") + chunk.getHashValue())));
+            System.out.println(read);
+            Encrypt e = new Encrypt(chunk.getKey(), false);
+            res += e.decrypt(read);
         }
         return res;
     }

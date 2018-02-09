@@ -1,14 +1,15 @@
 package FileSplitter;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
+import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import java.security.MessageDigest;
 
 import Encrypter.Encrypt;
 
@@ -27,6 +28,16 @@ public class Splitter {
         this(path, 1024);
     }
 
+    String getHash(String toDigest) {
+        try {
+            MessageDigest m=MessageDigest.getInstance("MD5");
+            m.update(toDigest.getBytes(),0,toDigest.length());
+            return new BigInteger(1,m.digest()).toString(16);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
 
     public void SplitFile(String folder) throws IOException {
         byte[] mainFileContent = Files.readAllBytes(path);
@@ -34,21 +45,29 @@ public class Splitter {
             byte[] temp = new byte[(i+chunkSize < mainFileContent.length ? chunkSize : mainFileContent.length - i)];
             System.arraycopy(mainFileContent, i, temp, 0, (i+chunkSize < mainFileContent.length ? chunkSize : mainFileContent.length - i));
             String str = new String(temp);
+            System.out.println(str);
 
-            Encrypt e = new Encrypt(str, false);
-            String key = Integer.toString(str.hashCode());
-            String encString = e.encrypt(key);
+            String key = getHash(str);
+            Encrypt e = new Encrypt(key, false);
+            String encString = e.encrypt(str);
 
-            String uri = folder + (((!folder.equals("")) && (folder.charAt(folder.length()-1) == '/'))? "" : "/") + encString.hashCode();
+            System.out.println(encString);
+
+            //just a test
+            Encrypt d = new Encrypt(key, false);
+            System.out.println(d.decrypt(encString));
+
+            String uri = folder + (((!folder.equals("")) && (folder.charAt(folder.length()-1) == '/'))? "" : "/") + getHash(encString);
             File f = new File(uri);
             f.getParentFile().mkdir();
             f.createNewFile();
 
             Files.write(Paths.get(uri), encString.getBytes());
-            indexedData.add(new IndexedComponent("" + encString.hashCode(), key));
+            indexedData.add(new IndexedComponent("" + getHash(encString), key));
         }
 
-        FileOutputStream fos = new FileOutputStream(Integer.toString(indexedData.hashCode()));
+        System.out.println(getHash(indexedData.toString()));
+        FileOutputStream fos = new FileOutputStream(getHash(indexedData.toString()));
         ObjectOutputStream oos = new ObjectOutputStream(fos);
         oos.writeObject(indexedData);
         oos.close();
