@@ -1,6 +1,7 @@
 package FileSplitter;
 
 import Encrypter.Encrypt;
+import javafx.util.Pair;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 public class Combiner {
 
     private String indexFileHash;
+    private String fileName;
     private ArrayList<IndexedComponent> indexedComponentList;
     private String path;
 
@@ -22,10 +24,16 @@ public class Combiner {
         this.path = path;
     }
 
+    public String getFileName() {
+        return fileName;
+    }
+
     public void loadIndex() throws IOException, ClassNotFoundException {
         FileInputStream fis = new FileInputStream(indexFileHash);
         ObjectInputStream ois = new ObjectInputStream(fis);
-        indexedComponentList = (ArrayList<IndexedComponent>) ois.readObject();
+        Pair<String, ArrayList<IndexedComponent>> obj = (Pair<String, ArrayList<IndexedComponent>>) ois.readObject();
+        indexedComponentList = obj.getValue();
+        fileName = obj.getKey();
     }
 
     public String loadFile() throws IOException {

@@ -1,38 +1,64 @@
 package Server;
 
-import java.io.DataOutputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
+import Encrypter.Encrypt;
+
+import java.io.*;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 public class Client {
 
-    private Socket s;
+    private int port;
+    InetAddress address;
 
-    public Client(String host, int port, String file) {
-        try {
-            s = new Socket(host, port);
-            sendFile(file);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public Client (String host, int port) throws IOException {
+        this.port = port;
+        address = InetAddress.getByName(host);
     }
 
-    public void sendFile(String file) throws IOException {
-        DataOutputStream dos = new DataOutputStream(s.getOutputStream());
-        FileInputStream fis = new FileInputStream(file);
-        byte[] buffer = new byte[4096];
+    public String sendFile(String name, String content) throws IOException {
 
-        while (fis.read(buffer) > 0) {
-            dos.write(buffer);
-        }
+        Socket socket = new Socket(address, port);
+        //Sending Streams
+        OutputStream os = socket.getOutputStream();
+        PrintWriter out = new PrintWriter(os, true);
 
-        fis.close();
-        dos.close();
+        //Receiving Streams
+        InputStream is = socket.getInputStream();
+        InputStreamReader isr = new InputStreamReader(is);
+        BufferedReader br = new BufferedReader(isr);
+
+        //try login
+        out.println("S");
+        out.println(name);
+
+        Encrypt e = new Encrypt("temp", false);
+
+        out.println(e.encrypt(content));
+        String hash = br.readLine();
+        return hash;
     }
 
-    public static void main(String[] args) {
-        Client fc = new Client("localhost", 1988, "temp.txt");
-    }
+    public String receiveFile(String hash) throws IOException {
 
+        Socket socket = new Socket(address, port);
+        //Sending Streams
+        OutputStream os = socket.getOutputStream();
+        PrintWriter out = new PrintWriter(os, true);
+
+        //Receiving Streams
+        InputStream is = socket.getInputStream();
+        InputStreamReader isr = new InputStreamReader(is);
+        BufferedReader br = new BufferedReader(isr);
+
+        //try login
+        out.println("R");
+        out.println(hash);
+        String name = br.readLine();
+        System.out.println(name);
+        String content = new Encrypt("temp", false).decrypt(br.readLine());
+
+        return content;
+    }
 }

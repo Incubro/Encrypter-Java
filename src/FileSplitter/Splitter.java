@@ -13,19 +13,32 @@ import java.security.MessageDigest;
 
 import Encrypter.Encrypt;
 
+import Server.Client;
+import javafx.util.Pair;
+
 public class Splitter {
 
     private Path path;
     private ArrayList<IndexedComponent> indexedData;
     private int chunkSize;
+    private String fileName;
 
-    public Splitter(String path, int chunkSize) {
-        this.path = Paths.get(path);
+    private String host = "localhost";
+    private int port = 25000;
+    private String id = "admin";
+    private String pass = "admin";
+
+    private Client client;
+
+    public Splitter(String path, String fileName, int chunkSize) throws IOException {
+        this.path = Paths.get(path + fileName);
+        this.fileName = fileName;
         this.chunkSize = chunkSize;
         indexedData = new ArrayList<>();
+        client = new Client(host, port);
     }
-    public Splitter(String path) {
-        this(path, 1024);
+    public Splitter(String path, String fileName) throws IOException {
+        this(path, fileName, 1024);
     }
 
     String getHash(String toDigest) {
@@ -39,28 +52,23 @@ public class Splitter {
         return "";
     }
 
-    public void SplitFile(String folder) throws IOException {
+    public String SplitFile(String folder) throws IOException {
         byte[] mainFileContent = Files.readAllBytes(path);
         for (int i = 0; i < mainFileContent.length; i += chunkSize) {
             byte[] temp = new byte[(i+chunkSize < mainFileContent.length ? chunkSize : mainFileContent.length - i)];
             System.arraycopy(mainFileContent, i, temp, 0, (i+chunkSize < mainFileContent.length ? chunkSize : mainFileContent.length - i));
             String str = new String(temp);
-            System.out.println(str);
 
             String key = getHash(str);
             Encrypt e = new Encrypt(key, false);
             String encString = e.encrypt(str);
 
-            System.out.println(encString);
-
-            //just a test
-            Encrypt d = new Encrypt(key, false);
-            System.out.println(d.decrypt(encString));
-
             String uri = folder + (((!folder.equals("")) && (folder.charAt(folder.length()-1) == '/'))? "" : "/") + getHash(encString);
             File f = new File(uri);
             f.getParentFile().mkdir();
             f.createNewFile();
+
+//            client.sendFile(id, pass, getHash(encString), encString);
 
             Files.write(Paths.get(uri), encString.getBytes());
             indexedData.add(new IndexedComponent("" + getHash(encString), key));
@@ -69,9 +77,10 @@ public class Splitter {
         System.out.println(getHash(indexedData.toString()));
         FileOutputStream fos = new FileOutputStream(getHash(indexedData.toString()));
         ObjectOutputStream oos = new ObjectOutputStream(fos);
-        oos.writeObject(indexedData);
+        Pair<String, ArrayList<IndexedComponent>> obj = new Pair<>(fileName, indexedData);
+        oos.writeObject(obj);
         oos.close();
-
+        return getHash(indexedData.toString());
     }
 
 }

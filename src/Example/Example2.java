@@ -24,7 +24,7 @@ public class Example2 {
 //            MessageDigest md = MessageDigest.getInstance("MD5");
 //            String digest = new String (md.digest("jatin".getBytes("UTF-8")));
 //            System.out.println(digest);
-            Splitter s = new Splitter("temp.txt", 2);
+            Splitter s = new Splitter("", "temp.txt", 12);
             s.SplitFile("tempf/");
 
         } catch (Exception e) {
