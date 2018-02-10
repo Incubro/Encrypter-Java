@@ -37,6 +37,7 @@ public class Client {
 
         out.println(e.encrypt(content));
         String hash = br.readLine();
+        socket.close();
         return hash;
     }
 
@@ -56,9 +57,9 @@ public class Client {
         out.println("R");
         out.println(hash);
         String name = br.readLine();
-        System.out.println(name);
         String content = new Encrypt("temp", false).decrypt(br.readLine());
 
+        socket.close();
         return content;
     }
 }

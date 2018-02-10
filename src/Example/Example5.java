@@ -13,8 +13,12 @@ public class Example5 {
         try {
 
             Client client = new Client("localhost", 25000);
-//            System.out.println(client.sendFile("temp.txt", new String(Files.readAllBytes(Paths.get("temp.txt")))));
-            System.out.println(client.receiveFile("cc529c9ceb5290ddc7188fc86144d3b6"));
+
+            System.out.println("Sending File");
+            String hash = client.sendFile("temp.txt", new String(Files.readAllBytes(Paths.get("temp.txt"))));
+
+            System.out.println("Rceiving File");
+            System.out.println(client.receiveFile(hash));
 
         } catch (Exception e) {
             e.printStackTrace();
